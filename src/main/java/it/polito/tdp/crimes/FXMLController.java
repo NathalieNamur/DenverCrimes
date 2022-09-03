@@ -7,6 +7,7 @@ package it.polito.tdp.crimes;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import it.polito.tdp.crimes.model.Adiacenza;
 import it.polito.tdp.crimes.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -18,41 +19,68 @@ public class FXMLController {
 	
 	private Model model;
 
-    @FXML // ResourceBundle that was given to the FXMLLoader
+	
+    @FXML
     private ResourceBundle resources;
 
-    @FXML // URL location of the FXML file that was given to the FXMLLoader
+    @FXML
     private URL location;
 
-    @FXML // fx:id="boxCategoria"
-    private ComboBox<?> boxCategoria; // Value injected by FXMLLoader
+    @FXML
+    private ComboBox<String> boxCategoria;
 
-    @FXML // fx:id="boxMese"
-    private ComboBox<?> boxMese; // Value injected by FXMLLoader
+    @FXML
+    private ComboBox<Integer> boxMese;
 
-    @FXML // fx:id="btnAnalisi"
-    private Button btnAnalisi; // Value injected by FXMLLoader
+    @FXML
+    private Button btnAnalisi;
 
-    @FXML // fx:id="boxArco"
-    private ComboBox<?> boxArco; // Value injected by FXMLLoader
+    @FXML
+    private ComboBox<?> boxArco;
 
-    @FXML // fx:id="btnPercorso"
-    private Button btnPercorso; // Value injected by FXMLLoader
+    @FXML
+    private Button btnPercorso;
 
-    @FXML // fx:id="txtResult"
-    private TextArea txtResult; // Value injected by FXMLLoader
+    @FXML
+    private TextArea txtResult;
 
+    
+    
     @FXML
     void doCalcolaPercorso(ActionEvent event) {
 
     }
 
+    
     @FXML
     void doCreaGrafo(ActionEvent event) {
 
+    	txtResult.clear();
+    	
+    	
+    	String category = boxCategoria.getValue();
+    	Integer month = boxMese.getValue();
+    	
+    	if ((category == null) || (month == null)) {
+    		txtResult.setText("Selezionare categoria e mese.");
+    		return;
+    	}
+    	
+    	model.creaGrafo(category, month);
+    	
+    	txtResult.setText("Grafo creato.");
+    	txtResult.appendText("\nNumero di vertici grafo: "+model.getNumVertici());
+    	txtResult.appendText("\nNumero di archi grafo: "+model.getNumArchi());
+    	
+    	
+    	txtResult.appendText("\n\nArchi con peso maggiore del peso medio:\n");
+    	for(Adiacenza a : model.getArchiPesoMaggiore())
+    		txtResult.appendText(a.toString()+"\n");
     }
 
-    @FXML // This method is called by the FXMLLoader when initialization is complete
+    
+    
+    @FXML
     void initialize() {
         assert boxCategoria != null : "fx:id=\"boxCategoria\" was not injected: check your FXML file 'Scene.fxml'.";
         assert boxMese != null : "fx:id=\"boxMese\" was not injected: check your FXML file 'Scene.fxml'.";
@@ -63,7 +91,12 @@ public class FXMLController {
 
     }
     
+    
     public void setModel(Model model) {
+    	
     	this.model = model;
+    	
+    	boxCategoria.getItems().addAll(model.getCategories());
+    	boxMese.getItems().addAll(model.getMonths());
     }
 }
